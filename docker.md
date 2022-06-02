@@ -1,5 +1,7 @@
 # Docker環境の構築
 
+## はじめてのDocker環境構築
+
 - 環境構築には、以下のファイルが必要で、事前に突合をおこなった。
   - Dockerfile（突合済み）
   - docker-compose.yml（突合済み）
@@ -77,6 +79,39 @@ root@8dee776d6ed6:/insta_clone#
 Model files unchanged.
 ```
 
+- 片付け
+```
+$ docker-compose down
+```
+
+## GemFileに変更を加えた場合
+
+- 全て新規で作成した場合に、'docker-compose run web rails db:create'を実施すると、以下のようなエラーが表示される。
+```
+Could not find activestorage-validator-0.2.0 in any of the sources
+Run `bundle install` to install missing gems.
+ERROR:
+```
+
+- イメージの起動とコンテナの起動をバックグラウンドで行う
+
+```
+$ docker-compose up -d
+```
+
+- 'bundle install'を実施
+
+```
+$ docker-compose run web bundle install
+```
+
+- コンテナを再起動
+
+```
+$ docker-compose restart
+```
+
 
 ## 参考
 - [docker-composeでRails 6×MySQLの開発環境を構築する方法](https://tmasuyama1114.com/docker-compose-rails6-mysql-development/)
+- [dockerでGemfile(gem追加)更新したら後、データベースが消えた、gemが反映しない](https://qiita.com/gyu_outputs/items/1cc1903db802daf0fdbc)
