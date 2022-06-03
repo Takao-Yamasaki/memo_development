@@ -86,7 +86,7 @@ $ docker-compose down
 
 ## GemFileに変更を加えた場合
 
-- 全て新規で作成した場合に、'docker-compose run web rails db:create'を実施すると、以下のようなエラーが表示される。
+- 全て新規で作成した場合に、`docker-compose run web rails db:create`を実施すると、以下のようなエラーが表示される。
 ```
 Could not find activestorage-validator-0.2.0 in any of the sources
 Run `bundle install` to install missing gems.
@@ -111,7 +111,35 @@ $ docker-compose run web bundle install
 $ docker-compose restart
 ```
 
+## Docker上でRSpecを実行する場合
+
+- 普通にローカル環境上で実行してしまうと、以下のようなエラーが起きる。
+- そのため、一旦コンテナに入った上で、実行してあげる必要がある。
+
+```
+$ bundle exec rspec
+
+An error occurred while loading ./spec/models/post_spec.rb.
+Failure/Error: ActiveRecord::Migration.maintain_test_schema!
+
+ActiveRecord::DatabaseConnectionError:
+  There is an issue connecting with your hostname: db.
+
+  Please check your database configuration and ensure there is a valid connection to your database.
+```
+
+- コンテナに入る
+```
+$ docker-compose exec web bash
+```
+
+- 無事入った後、`bundle exec rspec`を実行する
+```
+# bundle exec rspec
+```
+
 
 ## 参考
 - [docker-composeでRails 6×MySQLの開発環境を構築する方法](https://tmasuyama1114.com/docker-compose-rails6-mysql-development/)
 - [dockerでGemfile(gem追加)更新したら後、データベースが消えた、gemが反映しない](https://qiita.com/gyu_outputs/items/1cc1903db802daf0fdbc)
+- [Docker上でRspecを実行するとMySQLに接続できない](https://teratail.com/questions/286284)
