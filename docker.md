@@ -93,13 +93,14 @@ Run `bundle install` to install missing gems.
 ERROR:
 ```
 
+### コンテナが起動してない場合
 - イメージの起動とコンテナの起動をバックグラウンドで行う
 
 ```
 $ docker-compose up -d
 ```
 
-- 'bundle install'を実施
+- `bundle install`を実施
 
 ```
 $ docker-compose run web bundle install
@@ -107,6 +108,33 @@ $ docker-compose run web bundle install
 
 - コンテナを再起動
 
+```
+$ docker-compose restart
+```
+
+### コンテナが起動している場合
+- コンテナが起動している状態で、`docker-compose run web bundle install`を実行してしまうと、起動しない謎コンテナが作成されてしまう。
+- `docker-compose run web bundle install`がなにやっているのか根本的によくわかっていない説。
+
+```
+$ docker container ls -a
+CONTAINER ID   IMAGE                                     COMMAND                  CREATED        STATUS                    PORTS                               NAMES
+db0b980a045c   insta_clone_ver7_web                      "entrypoint.sh bundl…"   16 hours ago   Exited (0) 16 hours ago                                       insta_clone_ver7_web_run_91fea5d63a17
+```
+
+- たぶんこの手順でいけるはず。
+- コンテナに入る
+```
+$ docker-compose exec web bash
+```
+
+- 入ったら、`bundle install`を実行
+  - コンテナが起動しているので、中に入れるはず。
+```
+# bundle install
+```
+
+- コンテナを再起動
 ```
 $ docker-compose restart
 ```
@@ -136,6 +164,22 @@ $ docker-compose exec web bash
 - 無事入った後、`bundle exec rspec`を実行する
 ```
 # bundle exec rspec
+```
+
+## Docker上でgenerateを実行する場合
+- 普通にローカルで実行しても、以下のようなエラーとなる。
+```
+$ rails g model Comment
+Could not find pagy-5.10.1 in any of the sources
+Run `bundle install` to install missing gems.
+```
+- コンテナに入る
+```
+$ docker-compose exec web bash
+```
+- `rails g` を実行する。
+```
+# rails g model Comment
 ```
 
 

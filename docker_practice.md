@@ -53,6 +53,61 @@ $ docker run --name mariadb000ex15 -dit --net=redmine000net3 -e MYSQL_ROOT_PASSW
 $ docker run -dit --name redmine000ex16 --network redmine000net3 -p 8087:3000 -e REDMINE_DB_MYSQL=mariadb000ex15 -e REDMINE_DB_DATABASE=redmine000db -e REDMINE_DB_USERNAME=redmine000kun -e REDMINE_DB_PASSWORD=rkunpass redmine
 ```
 
+## WordPressとMariaDBコンテナの構築
+- ネットワークの作成
+```
+$ docker network create wordpress000net4
+```
+
+- MariaDBコンテナの作成・起動
+```
+$ docker run --name mariadb000ex17 -dit --net=wordpress000net4 -e MYSQL_ROOT_PASSWORD=mariarootpass -e MYSQL_DATABASE=wordpress000db -e MYSQL_USER=wordpress000kun -e MYSQL_PASSWORD=wkunpass mariadb --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password
+```
+
+- WordPressコンテナの作成・起動
+```
+$ docker run --name wordpress000ex18 -dit --net=wordpress000net4 -p 8088:80 -e WORDPRESS_DB_HOST=mariadb000ex17 -e WORDPRESS_DB_NAME=wordpress000db -e WORDPRESS_DB_USER=wordpress000kun -e WORDPRESS_DB_PASSWORD=wkunpass wordpress
+```
+
+## ホストからコンテナの中にファイルをコピーする
+- Apacheコンテナを作成
+```
+$ docker run --name apa000ex19 -d -p 8089:80 httpd
+```
+
+- ホストからコンテナへファイルをコピー
+```
+$ docker cp /Users/takao.yamasaki/Documents/index.html apa000ex19:/usr/local/apache2/htdocs/
+```
+
+## コンテナからホストの中にファイルをコピーする
+- コンテナは、`apa000ex19`をそのまま使用する
+
+- ファイルを区別するために、ホストのファイルをリネームしておく
+```
+$ mv /Users/takao.yamasaki/Documents/index.html /Users/takao.yamasaki/Documents/index2.html
+```
+
+- コンテナからホストへファイルをコピー
+```
+$ docker cp apa000ex19:/usr/local/apache2/htdocs/ /Users/takao.yamasaki/Documents/index.html
+```
+
+## ボリュームマウントとバインドマウントの違い
+
+- ボリュームマウントとは、Dockerエンジンが管理している領域内にボリュームを作成して、コンテナにマウントすること。
+- バインドマウントとは、Dockerエンジンが管理していない場所に存在しているディレクトリやファイルにマウント（取り付ける）すること。
+
+## バインドマウントしてみる
+- Apacheコンテナの作成・起動
+```
+$ docker run --name apa000ex20 -d -p 8090:80 -v /Users/takao.yamasaki/Documents/apa_folder:/usr/local/apache2/htdocs httpd
+```
+- マウントしたディレクトリにindex.htmlを配置
+```
+$ mv /Users/takao.yamasaki/Documents/index.html /Users/takao.yamasaki/Documents/apa_folder/ 
+```
+
 ## Docker上でのlog調査
 - コンテナが何かの理由で起動しなかった場合などに、`docker logs`を使って、logを調査する
 ```
@@ -62,6 +117,13 @@ $ docker logs mariadb000ex15
 	command was: mariadbd --character--set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authetication-plugin=mysql_native_password --verbose --help --log-bin-index=/tmp/tmp.JRr2Sfh1lc
 	2022-06-03  6:17:45 0 [Warning] Could not open mysql.plugin table: "Table 'mysql.plugin' doesn't exist". Some options may be missing from the help text
 2022-06-03  6:17:45 0 [ERROR] mariadbd: unknown variable 'character--set-server=utf8mb4'
+```
+
+## 便利なコマンド
+
+- 現在マウントしていないボリュームを全て削除する。
+```
+$ docker volume prune
 ```
 
 ## 参考
