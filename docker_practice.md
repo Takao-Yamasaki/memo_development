@@ -108,6 +108,17 @@ $ docker run --name apa000ex20 -d -p 8090:80 -v /Users/takao.yamasaki/Documents/
 $ mv /Users/takao.yamasaki/Documents/index.html /Users/takao.yamasaki/Documents/apa_folder/ 
 ```
 
+## ボリュームマウントしてみる
+- マウントするボリュームの作成
+```
+$ docker volume create apa000vol1
+```
+- Apacheコンテナを起動する
+```
+$ docker run --name apa000ex21 -d 
+```
+
+
 ## Docker上でのlog調査
 - コンテナが何かの理由で起動しなかった場合などに、`docker logs`を使って、logを調査する
 ```
