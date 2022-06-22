@@ -115,9 +115,54 @@ $ docker volume create apa000vol1
 ```
 - Apacheコンテナを起動する
 ```
-$ docker run --name apa000ex21 -d 
+$ docker run --name apa000ex21 -d -p 8091:80 -v apa000vol1:/usr/local/apache2/htdocs httpd
+```
+- ボリュームの詳細情報を表示
+```
+$ docker volume inspect apa000vol1
+[
+    {
+        "CreatedAt": "2022-06-13T11:45:32Z",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/apa000vol1/_data",
+        "Name": "apa000vol1",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+```
+- マウントされているかどうかを調べる
+```
+$ docker container inspect 
+
+ "Mounts": [
+            {
+                "Type": "volume",
+                "Name": "apa000vol1",
+                "Source": "/var/lib/docker/volumes/apa000vol1/_data",
+                "Destination": "/usr/local/apache2/htdocs",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,
+                "Propagation": ""
+            }
+        ],
 ```
 
+- 後始末を行う
+	- ボリュームの状況確認
+```
+$ docker volume ls
+DRIVER    VOLUME NAME
+local     apa000vol1
+local     insta_clone_ver7_bundle
+local     insta_clone_ver7_mysql_data
+```
+	- ボリュームの削除
+```
+$ docker volume rm apa000vol1
+```
 
 ## Docker上でのlog調査
 - コンテナが何かの理由で起動しなかった場合などに、`docker logs`を使って、logを調査する
