@@ -164,6 +164,55 @@ local     insta_clone_ver7_mysql_data
 $ docker volume rm apa000vol1
 ```
 
+## コンテナをイメージ化する。
+- Apacheコンテナを作成しておく
+```
+$ docker run --name apa000ex22 -d -p 8092:80 httpd
+```
+- コンテナをイメージに書き出す
+```
+$ docker commit apa000ex22 ex22_original1
+sha256:5034571a73ca771b34d0f5f995456207231419bd006308ed6240926058edd156
+```
+- イメージが作成されたことを確認する
+```
+$ docker image ls
+REPOSITORY                         TAG       IMAGE ID       CREATED          SIZE
+ex22_original1                     latest    5034571a73ca   15 seconds ago   145MB
+```
+
+- 後始末を行う（imageの削除）
+```
+$ docker image rm ex22_original1 
+```
+
+### DockerFileでイメージを作ろう
+
+- 作業用フォルダにindex.htmlを作成する
+- 作業用フォルダに`Dockerfile`を作成する
+```
+# 元にするイメージを指定する
+FROM httpd
+
+# イメージにindex.htmlを追加する
+# コピー先の指定はApacheのドキュメントルート
+COPY index.html /usr/local/apache2/htdocs/
+```
+- ビルドしてイメージを作る
+```
+docker build -t ex22_original2 /Users/takao.yamasaki/Documents/apa_folder
+```
+- イメージが作成されたことを確認する
+```
+docker image ls
+REPOSITORY                         TAG       IMAGE ID       CREATED         SIZE
+ex22_original2                     latest    f58597acd3c1   2 minutes ago   145MB
+```
+- イメージの削除
+```
+$ docker image rm ex22_original2
+```
+
 ## Docker上でのlog調査
 - コンテナが何かの理由で起動しなかった場合などに、`docker logs`を使って、logを調査する
 ```
